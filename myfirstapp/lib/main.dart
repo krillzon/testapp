@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'geolocator.dart';
 
 
 void main() => runApp(CupertinoApp(
@@ -17,15 +18,29 @@ final GlobalKey<NavigatorState> secondTabNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> thirdTabNavKey = GlobalKey<NavigatorState>();
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
+}
+
+class Location {
+  static double latitude = 0.0, longitude = 0.0;
 }
 
 // Home screen class
 class _HomeScreenState extends State<HomeScreen> {
 
+  var result = determinePosition().then((value) {
+    print(Location.latitude);
+    print(Location.longitude);
+    Location.longitude = value.longitude;
+    Location.latitude = value.latitude;
+    print(Location.latitude);
+    print(Location.longitude);
+  });
+
   late GoogleMapController mapController;
-  final LatLng _center = const LatLng(45.521563, -122.677433);
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
@@ -53,15 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
           return Scaffold(
             appBar: AppBar(
               title: Text('Search the map'),
-              centerTitle: true,
+              centerTitle: true
               ),
               body: GoogleMap(
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 11.0,
-          ),
-        ),
+                target: LatLng(Location.latitude, Location.longitude),
+                zoom: 11.0),
+                ),
           );
         } else if (index == 1) {
           return MaterialApp(
