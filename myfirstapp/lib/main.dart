@@ -2,6 +2,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 
 void main() => runApp(CupertinoApp(
                       home: HomeScreen(),
@@ -19,89 +21,81 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-// Tabs
-class HomeTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.redAccent,
-    );
-  }
-}
-
-class MapTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.greenAccent,
-    );
-  }
-}
-
-class FriendsTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.blue,
-    );
-  }
-}
-
 // Home screen class
 class _HomeScreenState extends State<HomeScreen> {
+
+  late GoogleMapController mapController;
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
   @override
   Widget build(BuildContext context) {
-    /*
-    var questions = ["whats your favorite animal?",
-                     "whats your favorite color?"];
-    return MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(
-            title: Text("My App!"),
-          ),
-          body: Center(child: Column(
-            children: [
-              Text(questions[questionIndex]),
-              ElevatedButton(child: Text("answer1"), onPressed: answerQuestion),
-              ElevatedButton(child: Text("answer2"), onPressed: 
-                             () => print("answer 2 chosen")),
-              ElevatedButton(child: Text("answer3"), onPressed: answerQuestion)
-            ],
-          ))),
-    );
-  }
-  */
   return CupertinoTabScaffold(
     tabBar: CupertinoTabBar(
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
+          icon: Icon(Icons.map),
+          //label: 'Map',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          label: 'Map',
+          icon: Icon(Icons.home),
+          //label: 'Home',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),
-          label: 'Friends',
+          //label: 'Friends',
         ),
       ],
     ), tabBuilder: (BuildContext context, int index) {
         if (index == 0) {
-          return CupertinoTabView(
-            navigatorKey: firstTabNavKey,
-            builder: (BuildContext context) => HomeTab(),
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Search the map'),
+              centerTitle: true,
+              ),
+              body: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: 11.0,
+          ),
+        ),
           );
         } else if (index == 1) {
-          return CupertinoTabView(
-            navigatorKey: secondTabNavKey,
-            builder: (BuildContext context) => MapTab(),
+          return MaterialApp(
+            home: DefaultTabController(
+              length: 1,
+              child: Scaffold(
+                appBar: AppBar(
+                  bottom: TabBar(
+                    tabs: [
+                      Tab(icon: Image.asset('assets/tabs/image2.png'))
+                      ]
+                    ),
+                    title: Text('Home'),
+                    backgroundColor: Colors.red,
+                )
+              )
+            )
           );
         } else {
-          return CupertinoTabView(
-            navigatorKey: thirdTabNavKey,
-            builder: (BuildContext context) => FriendsTab(),
+          return MaterialApp(
+            home: DefaultTabController(
+              length: 1,
+              child: Scaffold(
+                appBar: AppBar(
+                  bottom: TabBar(
+                    tabs: [
+                      Tab(icon: Image.asset('assets/tabs/image2.png'))
+                    ]
+                    ),
+                    title: Text('Friends'),
+                    backgroundColor: Colors.green,
+                )
+              )
+            )
           );
         } 
       });
